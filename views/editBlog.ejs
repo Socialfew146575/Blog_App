@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/head') %>
+    <title>Edit Blog</title>
+   <style>
+      body {
+        background-size: cover;
+        margin: 0;
+        font-family: "Arial", sans-serif;
+        color: #000;
+      }
+
+      .container {
+        padding: 20px;
+        margin: 50px auto;
+        max-width: 800px;
+        text-align: left;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #000;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      form {
+        margin-top: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      input[type="file"],
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        margin-top: 6px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+      }
+
+      button {
+        background-color: #000;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+       
+    </style>
+  </head>
+  <body>
+    <%- include('./partials/nav') %>
+
+    <div class="container">
+      <h1>Edit Blog</h1>
+
+      <form action="/blog/edit/<%=blog._id%>?_method=PATCH" method="POST" enctype="multipart/form-data">
+
+        <!-- Display current image -->
+        <img src="<%= blog.coverImageURL %>" alt="Current Blog Cover Image" width="100%" height="200px" style="object-fit: cover;" />
+
+        <!-- File input to choose a new image -->
+        <div class="form-group">
+          <label for="coverImage">Change Cover Image</label>
+          <input
+            type="file"
+            class="form-control"
+            id="coverImage"
+            name="coverImage"
+            accept="image/*"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="title">Blog Title</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            placeholder="Blog Title"
+            value="<%= blog.title %>"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="blogContent">Blog Body</label>
+          <textarea
+            class="form-control"
+            id="blogContent"
+            name="blogContent"
+            rows="9"
+          ><%= blog.body %></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-dark">Update Blog</button>
+      </form>
+    </div>
+
+    <%- include('./partials/script') %>
+
+   
+  </body>
+</html>

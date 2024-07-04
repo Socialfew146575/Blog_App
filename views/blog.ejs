@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/head') %>
+    <title>Blog</title>
+    <style>
+      body {
+        background-size: cover;
+        margin: 0;
+        font-family: "Arial", sans-serif;
+        color: #000;
+      }
+
+      .container {
+        padding: 20px;
+        margin: 50px auto;
+        max-width: 800px;
+        text-align: left;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #000;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      img {
+        width: 100%;
+        border-radius: 8px;
+      }
+
+      hr {
+        border-top: 1px solid #ccc;
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+
+      .profile {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      .profile img {
+        width: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      p {
+        margin-top: 20px;
+        color: #000;
+        white-space: pre-wrap;
+      }
+
+      textarea {
+        width: 100%;
+        height: 40px;
+        resize: vertical;
+        border-radius: 4px;
+        padding: 4px;
+        outline: none;
+      }
+
+      .comment-container {
+        margin-top: 20px;
+      }
+
+      .comment {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .comment img {
+        width: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .comment-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+
+      .comment-info small {
+        margin-left: auto;
+      }
+
+      .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .comment-header h1 {
+        font-size: 20px;
+      }
+
+      .signin-info {
+        text-align: center;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('./partials/nav') %>
+
+    <div class="container">
+      <h1><%= blog.title %></h1>
+
+      <img src="<%= blog.coverImageURL %>" alt="Blog Cover Image" />
+      <hr />
+      <div class="profile">
+        <img
+          src="<%=blog.createdBy.profileImageURL%>"
+          alt="Profile Image"
+          width="50px"
+          height="50px"
+          style="border-radius: 25px; object-fit: cover"
+        />
+        <div class="info">
+          <b><i><%=blog.createdBy.fullName%></i></b>
+          <small><%=blog.createdAt%></small>
+        </div>
+      </div>
+      <hr />
+
+      <p><%= blog.body %></p>
+
+      <%if(locals.user && locals.user._id.toString() ===
+      blog.createdBy._id.toString()) {%>
+      <div
+        style="display: flex; justify-content: end; gap: 15px"
+        class="container-fluid"
+      >
+        <a href="/blog/edit/<%=blog._id%>"
+          ><button class="btn btn-outline-secondary">Edit</button></a
+        >
+
+        <form action="/blog/delete/<%=blog._id%>?_method=DELETE" method="POST">
+          <button
+            class="btn btn-danger btn-md"
+            onclick="handleDelete(event,`<%=blog._id%>`)"
+            type="submit"
+          >
+            Delete
+          </button>
+        </form>
+      </div>
+      <%}%>
+    </div>
+
+    <div class="container mt-3">
+      <div class="comment-header">
+        <h1>Comments (<%=comments.length%>)</h1>
+        <hr />
+      </div>
+      <%if(locals.user) {%>
+      <form action="/blog/comment/<%=blog._id%>" method="post">
+        <div class="form-group mb-3">
+          <textarea
+            id="content"
+            name="content"
+            placeholder="Type your comment here..."
+            rows="1"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-dark btn-sm">Post Comment</button>
+      </form>
+      <%} else {%>
+      <div class="signin-info">
+        <h3>Sign in to write a comment</h3>
+        <p>Join our community to share your thoughts on this blog post.</p>
+        <a href="/user/signin" class="btn btn-dark">Sign In</a>
+      </div>
+      <%}%>
+      <hr />
+
+      <% if(comments.length > 0){%>
+      <div class="container mt-3 comment-container">
+        <%comments.forEach(comment => {%>
+        <div class="comment">
+          <div class="comment-info">
+            <img
+              src="<%=comment.createdBy.profileImageURL%>"
+              alt="Profile Image"
+              width="30px"
+              height="30px"
+              style="border-radius: 25px; object-fit: cover"
+            />
+            <b><%=comment.createdBy.fullName%></b>
+            <small><%=comment.createdAt%></small>
+          </div>
+          <p><%=comment.content%></p>
+
+          <%if(locals.user && comment.createdBy._id.toString() ===
+          locals.user._id.toString()){%>
+          <div style="display: flex; justify-content: end; gap: 15px;align-items: center;">
+          
+            <form
+          action="/blog/comment/delete/<%= blog._id %>/<%= comment._id %>?_method=DELETE"
+          method="POST"
+        >
+          <button type="submit" style="background: none; border: none; cursor: pointer;">
+             <i  class="fa-solid fa-trash"></i>
+          </button>
+        </form>
+          </div>
+          <%}%>
+        </div>
+        <%})%>
+      </div>
+      <%} %>
+    </div>
+
+    <%- include('./partials/script') %>
+  </body>
+</html>
